@@ -11,14 +11,21 @@ import InventoryDashboard from "./inventoryDashboard";
 import HostelInventory from "./HostelInventory";
 import Reports from "./Reports";
 import Department from "./Bdes";
+import InventoryRequests from "./InventoryRequests";
 
-const sections = ["Overall Inventory", "Hostel", "Reports", "Department"];
+const sections = [
+  "Overall Inventory",
+  "Section",
+  "Department",
+  "Requests",
+];
 
 const sectionComponents = {
   "Overall Inventory": InventoryDashboard,
-  Hostel: HostelInventory,
+  Section: HostelInventory,
   Reports,
   Department,
+  Requests: InventoryRequests,
 };
 
 export default function SectionNavigation() {
@@ -110,7 +117,7 @@ export default function SectionNavigation() {
           </Button>
         </Flex>
 
-        <Flex align="center" mt="md" gap="1rem">
+        {/* <Flex align="center" mt="md" gap="1rem">
           <Select
             placeholder="Sort By"
             data={categories}
@@ -118,7 +125,7 @@ export default function SectionNavigation() {
             onChange={setSortedBy}
             icon={<SortAscending />}
           />
-        </Flex>
+        </Flex> */}
       </Flex>
 
       <div style={{ marginTop: "2rem" }}>

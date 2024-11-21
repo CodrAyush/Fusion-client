@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Table, Container, Group, Paper, Button, Text } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import AddProduct from "./AddProduct";
+import TransferProduct from "./TransferProduct";
 import "../styles/popupModal.css";
 
 export default function Inventory() {
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showTransferProductModal, setShowTransferProductModal] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("CSE");
   const [inventoryData, setInventoryData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,10 +22,10 @@ export default function Inventory() {
   ];
 
   const fetchDepartmentData = async () => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem('authToken');
 
     if (!token) {
-      alert("Please log in to add a product");
+      alert('Please log in to add a product');
       return;
     }
 
@@ -31,23 +33,23 @@ export default function Inventory() {
       const response = await fetch(
         `http://127.0.0.1:8000/inventory/api/departments/?department=${selectedDepartment}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: `Token ${token}`,
           },
-        },
+        }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch department data");
+        throw new Error('Failed to fetch department data');
       }
 
       const data = await response.json();
-      console.log("Department data:", data);
+      console.log('Department data:', data);
       setInventoryData(data);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching department data:", error);
+      console.error('Error fetching department data:', error);
       setLoading(false);
     }
   };
@@ -57,9 +59,10 @@ export default function Inventory() {
     fetchDepartmentData(selectedDepartment);
   }, [selectedDepartment]);
 
-  const handleTransferClick = () => {
-    navigate("/inventory/transfer");
-  };
+
+  // const handleTransferClick = () => {
+  //   navigate("/inventory/transfer");
+  // };
 
   const openAddProductModal = () => {
     setShowAddProductModal(true);
@@ -68,8 +71,15 @@ export default function Inventory() {
   const closeAddProductModal = () => {
     setShowAddProductModal(false);
   };
+  const openTransferProductModal = () => {
+    setShowTransferProductModal(true);  // Show the modal when "Add Product" is clicked
+  };
 
-  const relevantColumns = ["Department", "Item", "Quantity"];
+  const closeTransferProductModal = () => {
+    setShowTransferProductModal(false);  // Close the modal when needed
+  };
+
+  const relevantColumns = ["Item", "Quantity"];
 
   return (
     <Container
@@ -106,10 +116,10 @@ export default function Inventory() {
           <Button
             variant="filled"
             color="blue"
-            onClick={handleTransferClick}
+            onClick={openTransferProductModal}
             size="md"
           >
-            Transfer Item
+            Transfer Product
           </Button>
 
           {departments.map((dept, index) => (
@@ -169,9 +179,9 @@ export default function Inventory() {
               ) : (
                 inventoryData.map((item, index) => (
                   <tr key={index}>
-                    <td style={{ textAlign: "center" }}>
+                    {/* <td style={{ textAlign: "center" }}>
                       {item.department_name}
-                    </td>
+                    </td> */}
                     <td style={{ textAlign: "center" }}>{item.item_name}</td>
                     <td style={{ textAlign: "center" }}>{item.quantity}</td>
                   </tr>
@@ -244,7 +254,80 @@ export default function Inventory() {
                 overflow: "hidden", // Prevent scrolling inside modal
               }}
             >
-              <AddProduct />
+              <AddProduct
+                onSuccess={closeAddProductModal}
+                selectedDepartment={selectedDepartment}
+                val="departments"
+                name="department_name"
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {showTransferProductModal && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 1000,
+              overflow: "hidden",
+            }}
+            role="button"
+            tabIndex={0}
+            onClick={closeTransferProductModal}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                closeTransferProductModal();
+              }
+            }}
+            aria-label="Close Transfer Product Modal Background"
+          />
+
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "80%",
+              maxWidth: "600px",
+              backgroundColor: "#fff",
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              borderRadius: "8px",
+              zIndex: 1001,
+              overflow: "hidden", // Ensure no scrollbar appears
+            }}
+          >
+            <button
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                backgroundColor: "transparent",
+                border: "none",
+                fontSize: "16px",
+                cursor: "pointer",
+              }}
+              onClick={closeTransferProductModal}
+              aria-label="Close Modal"
+            >
+              X
+            </button>
+
+            <div
+              style={{
+                margin: "-80px 0 -65px 0",
+                height: "835px",
+                overflow: "hidden", // Prevent scrolling inside modal
+              }}
+            >
+              <TransferProduct />
             </div>
           </div>
         </>
